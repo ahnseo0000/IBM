@@ -537,6 +537,21 @@ def compare_strata(
 # 5. 판정 규칙 (stat_make_review_report용)
 # ──────────────────────────────────────────────
 
+def combine_robustness(check_results: list[Optional[str]]) -> Optional[str]:
+    """
+    SPEC §7-8 해석 견고성 취합.
+
+    check_results: 해석 검사별 판정. 실행하려 했으나 판정을 못 낸 검사는 None.
+    검사가 없거나 하나라도 미완료면 None → 뒤집힘 > 취약 > 견고.
+    """
+    if not check_results or any(r is None for r in check_results):
+        return None
+    for level in ("뒤집힘", "취약"):
+        if level in check_results:
+            return level
+    return "견고"
+
+
 def derive_verdict(
     numeric_accuracy: str | None,
     robustness: str | None,

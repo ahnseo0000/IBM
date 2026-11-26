@@ -85,7 +85,7 @@ def stat_make_review_report(
 
     from engine.stat_engine import (
         recompute_proportions, reweight, nonresponse_sensitivity,
-        compare_strata, derive_verdict, derive_doc_verdict,
+        compare_strata, combine_robustness, derive_verdict, derive_doc_verdict,
     )
 
     rows = []
@@ -138,27 +138,39 @@ def stat_make_review_report(
                     numeric_accuracy = "미확인"
                     skip_reasons.append(f"재계산 오류: {e}")
 
+                # 해석 검사별 판정. 실행 대상인데 판정을 못 내면 None(미완료)으로 남긴다.
+                check_results = []
+
                 # 재가중
                 if reference_id and criterion_threshold:
+                    result = None
                     ref_data, _ = _load_cache(base, reference_id)
                     if ref_data:
                         try:
                             rw = reweight(strata, ref_data["strata"], criterion_threshold, criterion_direction)
-                            if rw.get("robustness"):
-                                robustness = rw["robustness"]
+                            result = rw.get("robustness")
                             audit_tools.append(f"stat_reweight({cid})")
                         except Exception as e:
                             skip_reasons.append(f"재가중 오류: {e}")
+                    else:
+                        skip_reasons.append(f"NO_DATA: {reference_id}")
+                    check_results.append(result)
 
                 # 무응답
                 if criterion_threshold and any("invited" in s for s in strata):
+                    result = None
                     try:
                         nr = nonresponse_sensitivity(strata, criterion_threshold, criterion_direction)
-                        if robustness is None and nr.get("robustness"):
-                            robustness = nr["robustness"]
+                        result = nr.get("robustness")
                         audit_tools.append(f"stat_nonresponse_sensitivity({cid})")
                     except Exception as e:
                         skip_reasons.append(f"무응답 분석 오류: {e}")
+                    check_results.append(result)
+
+                robustness = combine_robustness(check_results)
+                # 미완료 검사가 있으면 '인용 가능'이 되지 않도록 사용 보류 처리
+                if check_results and robustness is None:
+                    applicable = False
 
         elif kind == "group_comparison" and dataset_id:
             data, src = _load_cache(base, dataset_id)
