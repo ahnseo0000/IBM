@@ -1,0 +1,9 @@
+# Research Integrity Agent — 금융 팩 의존성
+# Python >= 3.11
+# 클라우드 패키지 등록용 (pytest 제외)
+
+# WXO ADK (@tool 데코레이터)
+ibm-watsonx-orchestrate>=2.20.0
+
+# DART OpenAPI 호출
+requests>=2.31.0

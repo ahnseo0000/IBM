@@ -1,0 +1,43 @@
+{
+  "case_id": "A001",
+  "corp_label": "A사",
+  "stock_code": "035420",
+  "corp_code": "00266961",
+  "corp_name": "NAVER",
+  "fiscal_year": 2025,
+  "metric": "debt_ratio",
+  "reported_value": null,
+  "threshold": 100,
+  "direction": "이하",
+  "hypothesis": "견고",
+  "note": "NAVER 2025 CFS 부채비율=41.90% < 100%. OFS=29.32%. S0 충족, 모든 시나리오 충족.",
+  "cfs": {
+    "total_liabilities":        "12131482961723",
+    "total_equity":             "28953013365595",
+    "operating_income":         "2208138388720",
+    "interest_expense":         "561520268279",
+    "short_term_borrowings":    "132159574017",
+    "current_portion_lt_debt":  "0",
+    "long_term_borrowings":     "874112668001",
+    "bonds":                    "382248922805",
+    "lease_liabilities":        "1187801270991",
+    "operating_cash_flow":      "3095806604677",
+    "interest_is_approximate":  true,
+    "lease_found":              true
+  },
+  "ofs": {
+    "total_liabilities":        "4611415586302",
+    "total_equity":             "15729782986276",
+    "operating_income":         "1945532432697",
+    "interest_expense":         "292396477750",
+    "short_term_borrowings":    "0",
+    "current_portion_lt_debt":  "1597174210005",
+    "long_term_borrowings":     "100000000000",
+    "bonds":                    "382248922805",
+    "lease_liabilities":        "269557043575",
+    "operating_cash_flow":      "2304981084029",
+    "interest_is_approximate":  true,
+    "lease_found":              true,
+    "note": "OFS short_term_borrowings=0 (단기차입금 계정 없음; current_portion_lt_debt에 유동성사채 포함)"
+  }
+}

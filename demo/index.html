@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research Integrity Agent — Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f0f4f8; --surface: #fff; --border: #e5e7eb;
+      --text: #1f2328; --muted: #57606a; --accent: #3b82d4;
+      --green: #16a34a; --red: #dc2626; --amber: #d97706;
+    }
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; padding: 32px 16px 60px;
+      font-size: 14px; line-height: 1.6;
+    }
+    .hero { text-align: center; margin-bottom: 28px; }
+    .hero .badge {
+      display: inline-block; background: var(--accent); color: #fff;
+      font-size: 11px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; padding: 3px 12px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .hero p  { font-size: 14px; color: var(--muted); max-width: 520px; margin: 0 auto; }
+
+    /* 2열 레이아웃 */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    @media (max-width: 780px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* 왼쪽: 결과 카드 */
+    .left {}
+    .section-label {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+    }
+    .case-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    }
+    .corp-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+    .case-card h3 { font-size: 15px; font-weight: 700; margin: 2px 0 6px; }
+    .claim-text { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+    .metric-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 0; border-top: 1px solid var(--border); font-size: 12px;
+    }
+    .metric-name { color: var(--muted); }
+    .metric-val  { font-weight: 700; font-size: 14px; }
+
+    .verdict-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .vbadge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 10px; border-radius: 20px;
+    }
+    .v-solid  { background: #dcfce7; color: #15803d; }
+    .v-weak   { background: #fef3c7; color: #b45309; }
+    .v-revdef { background: #fee2e2; color: #b91c1c; }
+    .doc-v    { font-size: 12px; color: var(--muted); }
+    .doc-v strong { color: var(--text); }
+
+    .break-cond {
+      margin-top: 8px; font-size: 11px; color: var(--red);
+      background: #fff1f1; border-left: 3px solid var(--red);
+      padding: 5px 8px; border-radius: 0 6px 6px 0; line-height: 1.5;
+    }
+    .pass { color: var(--green); font-weight: 600; }
+    .fail { color: var(--red);   font-weight: 600; }
+
+    .s-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+    .s-table th { color: var(--muted); font-weight: 600; padding: 3px 4px; border-bottom: 1px solid var(--border); text-align: left; }
+    .s-table td { padding: 4px 4px; border-bottom: 1px solid #f3f4f6; }
+
+    /* 오른쪽: 채팅 */
+    .right {}
+    .chat-label {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+    }
+    .example-btns { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .example-btn {
+      background: var(--surface); border: 1px solid var(--accent); color: var(--accent);
+      border-radius: 8px; padding: 8px 12px; font-size: 12px; cursor: pointer;
+      text-align: left; line-height: 1.4; transition: background .12s, color .12s;
+    }
+    .example-btn:hover { background: var(--accent); color: #fff; }
+
+    .chat-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; height: 520px; position: relative;
+    }
+    #root { width: 100%; height: 100%; }
+
+    /* WXO 로더 오버레이 */
+    .chat-overlay {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: #f9fafb;
+      gap: 10px; z-index: 10;
+    }
+    .chat-overlay.hidden { display: none; }
+    .chat-overlay p { font-size: 13px; color: var(--muted); }
+    .spinner {
+      width: 28px; height: 28px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .auth-warn {
+      display: none; background: #fff3cd; border: 1px solid #ffc107;
+      border-radius: 8px; padding: 10px 14px; font-size: 12px;
+      color: #856404; line-height: 1.6; margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center; font-size: 11px; color: var(--muted);
+      border-top: 1px solid var(--border); padding-top: 14px;
+      max-width: 1000px; margin: 24px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">IBM watsonx Orchestrate · Research Integrity Agent</div>
+  <h1>AI 요약 속 숫자, 어디까지 믿어도 될까요?</h1>
+  <p>DART 공시 데이터를 직접 재계산해 금융 보고서의 수치 주장을 검증합니다.</p>
+</div>
+
+<div class="layout">
+
+  <!-- 왼쪽: 판정 결과 -->
+  <div class="left">
+    <div class="section-label">실제 판정 결과 — 2025 사업보고서</div>
+
+    <!-- A사 -->
+    <div class="case-card">
+      <div class="corp-label">A사 · 035420</div>
+      <h3>NAVER</h3>
+      <div class="claim-text">부채비율이 100% 이하라는 주장</div>
+      <div class="metric-row"><span class="metric-name">부채비율 (CFS)</span><span class="metric-val">41.90%</span></div>
+      <div class="metric-row"><span class="metric-name">기준</span><span class="metric-val">100% 이하</span></div>
+      <div class="metric-row"><span class="metric-name">별도(OFS)</span><span class="metric-val">29.32%</span></div>
+      <table class="s-table">
+        <thead><tr><th>시나리오</th><th>값</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>S0 연결 narrow</td><td>41.90%</td><td class="pass">통과</td></tr>
+          <tr><td>S2 별도 narrow</td><td>29.32%</td><td class="pass">통과</td></tr>
+        </tbody>
+      </table>
+      <div class="verdict-row">
+        <span class="vbadge v-solid">견고</span>
+        <span class="doc-v">문서 판정: <strong>통과</strong></span>
+      </div>
+    </div>
+
+    <!-- B사 -->
+    <div class="case-card">
+      <div class="corp-label">B사 · 005380</div>
+      <h3>현대자동차</h3>
+      <div class="claim-text">부채비율이 200% 이하라는 주장</div>
+      <div class="metric-row"><span class="metric-name">부채비율 (CFS)</span><span class="metric-val">188.95%</span></div>
+      <div class="metric-row"><span class="metric-name">기준</span><span class="metric-val">200% 이하</span></div>
+      <div class="metric-row"><span class="metric-name">기준까지 여유</span><span class="metric-val" style="color:var(--amber)">+11.05%p</span></div>
+      <table class="s-table">
+        <thead><tr><th>시나리오</th><th>값</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>S0 연결 narrow</td><td>188.95%</td><td class="pass">통과</td></tr>
+          <tr><td>S2 별도 narrow</td><td>40.89%</td><td class="pass">통과</td></tr>
+        </tbody>
+      </table>
+      <div class="verdict-row">
+        <span class="vbadge v-weak">취약</span>
+        <span class="doc-v">문서 판정: <strong>보완 요청</strong></span>
+      </div>
+      <div class="break-cond">기준까지 여유 11%p — 레버리지 급변 가능성</div>
+    </div>
+
+    <!-- C사 -->
+    <div class="case-card">
+      <div class="corp-label">C사 · 003490</div>
+      <h3>대한항공</h3>
+      <div class="claim-text">이자보상배율 1.5배 이상 &amp; 영업CF 커버 0.35 이상 주장</div>
+      <div class="metric-row"><span class="metric-name">이자보상배율 (CFS)</span><span class="metric-val" style="color:var(--red)">1.3801배</span></div>
+      <div class="metric-row"><span class="metric-name">영업CF 커버 S0</span><span class="metric-val">0.4351배</span></div>
+      <div class="metric-row"><span class="metric-name">영업CF 커버 S1 리스포함</span><span class="metric-val" style="color:var(--red)">0.1819배</span></div>
+      <table class="s-table">
+        <thead><tr><th>시나리오</th><th>값</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>이자보상배율 S0</td><td>1.3801</td><td class="fail">미달</td></tr>
+          <tr><td>영업CF S0</td><td>0.4351</td><td class="pass">통과</td></tr>
+          <tr><td>영업CF S1 리스포함</td><td>0.1819</td><td class="fail">미달</td></tr>
+        </tbody>
+      </table>
+      <div class="verdict-row">
+        <span class="vbadge v-revdef">뒤집힘(확정)</span>
+        <span class="doc-v">문서 판정: <strong>반려</strong></span>
+      </div>
+      <div class="break-cond">
+        이자보상배율 1.38 &lt; 기준 1.5 — S0 기준 이미 미달<br>
+        리스부채 포함 시 영업CF 커버 0.18 &lt; 기준 0.35
+      </div>
+    </div>
+  </div>
+
+  <!-- 오른쪽: 채팅 -->
+  <div class="right">
+    <div class="chat-label">직접 질문하기 — ri_coordinator 에이전트</div>
+
+    <div class="auth-warn" id="authWarn">
+      ⚠ 채팅을 사용하려면 같은 브라우저에서
+      <a href="https://jp-tok.watson-orchestrate.cloud.ibm.com" target="_blank" style="color:inherit;font-weight:700">WXO 콘솔</a>에 먼저 로그인해주세요.
+      로그인 후 이 페이지를 새로고침하면 채팅이 활성화됩니다.
+    </div>
+
+    <div class="example-btns">
+      <button class="example-btn" data-msg="A사(035420) 2025년 부채비율이 100% 이하라는 주장을 검증해줘. 보고서 기재값은 41.9%야.">
+        🅐 NAVER — 부채비율 100% 이하 검증
+      </button>
+      <button class="example-btn" data-msg="B사(005380) 2025년 부채비율이 200% 이하라는 주장을 검증해줘.">
+        🅑 현대차 — 부채비율 200% 이하 검증
+      </button>
+      <button class="example-btn" data-msg="C사(003490) 2025년 이자보상배율 1.5배 이상 주장과 영업CF 커버 0.35 이상 주장을 함께 검증해줘.">
+        🅒 대한항공 — 이자보상배율 + 영업CF 커버
+      </button>
+    </div>
+
+    <div class="chat-box">
+      <div class="chat-overlay" id="chatOverlay">
+        <div class="spinner"></div>
+        <p>에이전트 연결 중…</p>
+      </div>
+      <div id="root"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Made with IBM Bob &nbsp;·&nbsp; Research Integrity Agent · IBM watsonx Orchestrate Hackathon 2026</footer>
+
+<script>
+  // WXO webchat 임베드
+  window.wxOConfiguration = {
+    orchestrationID: "<YOUR_ORCHESTRATION_ID>",
+    hostURL: "https://jp-tok.watson-orchestrate.cloud.ibm.com",
+    rootElementID: "root",
+    showLauncher: false,
+    crn: "<YOUR_CRN>",
+    deploymentPlatform: "ibmcloud",
+    chatOptions: {
+      agentId: "<YOUR_AGENT_ID>",
+      agentEnvironmentId: "<YOUR_AGENT_ENVIRONMENT_ID>"
+    }
+  };
+
+  var overlay = document.getElementById('chatOverlay');
+  var authWarn = document.getElementById('authWarn');
+
+  setTimeout(function () {
+    var script = document.createElement('script');
+    script.src = window.wxOConfiguration.hostURL + '/wxochat/wxoLoader.js?embed=true';
+    script.addEventListener('load', function () {
+      wxoLoader.init();
+      // 위젯 렌더링 후 오버레이 제거
+      var check = setInterval(function () {
+        var chat = document.querySelector('#root > *');
+        if (chat) {
+          overlay.classList.add('hidden');
+          clearInterval(check);
+        }
+      }, 300);
+      // 5초 후에도 로드 안 되면 인증 경고 표시
+      setTimeout(function () {
+        if (!overlay.classList.contains('hidden')) {
+          overlay.classList.add('hidden');
+          authWarn.style.display = 'block';
+        }
+      }, 5000);
+    });
+    script.addEventListener('error', function () {
+      overlay.classList.add('hidden');
+      authWarn.style.display = 'block';
+    });
+    document.head.appendChild(script);
+  }, 0);
+
+  // 예시 버튼 → 채팅 입력창 주입
+  document.querySelectorAll('.example-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var msg = btn.getAttribute('data-msg');
+      var input = document.querySelector(
+        'textarea[data-testid="chat-input"], textarea.cds--text-area, [contenteditable="true"], textarea'
+      );
+      if (input) {
+        input.focus();
+        if (input.isContentEditable) {
+          input.textContent = msg;
+        } else {
+          var setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+          setter && setter.set ? setter.set.call(input, msg) : (input.value = msg);
+        }
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      navigator.clipboard && navigator.clipboard.writeText(msg);
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+kind: native
+name: ri_numeric_checker
+display_name: ri_numeric_checker
+description: '수치 검증 에이전트. 주장의 수치가 원자료와 맞는지 재계산으로 확인한다. 금융 주장은 fin_ 도구, 통계 주장은 stat_recompute_proportions를
+  사용한다.
+
+  '
+context_access_enabled: true
+context_variables: []
+restrictions: editable
+memory_enabled: false
+llm: groq/openai/gpt-oss-120b
+style: react_core
+hide_reasoning: false
+instructions: '너는 "수치 검증" 에이전트다. 받은 주장의 수치가 원자료와 맞는지만 확인한다. 금융 주장은 fin_get_financials로
+  공시를 가져오고 fin_recompute_ratios로 같은 정의로 다시 계산한다. 통계 주장은 stat_recompute_proportions를
+  쓴다. 단위, 기간, 분모, 연결·별도, 퍼센트와 %p를 구분한다. 결과는 도구가 준 일치 / 오류 확인 / 미확인 그대로, 재계산 수치와 source와
+  함께 돌려준다. 해석이나 전망은 판단하지 않는다. 해당 팩이 아닌 도구는 쓰지 않는다.
+
+  '
+guidelines: []
+collaborators: []
+tools:
+- stat_recompute_proportions
+- fin_get_financials
+- fin_recompute_ratios
+toolkits: []
+skills: []
+plugins:
+  agent_pre_invoke: []
+  agent_post_invoke: []
+sync_tool_flow_interactions: true
+bundled: false
+knowledge_base: []
+chat_with_docs:
+  enabled: true
+  supports_full_document: true
+  vector_index:
+    chunk_size: 400
+    chunk_overlap: 50
+    limit: 10
+    extraction_strategy: express
+  generation:
+    prompt_instruction: ''
+    max_docs_passed_to_llm: 5
+    generated_response_length: Moderate
+    display_text_no_results_found: I searched my knowledge base, but did not find
+      anything related to your query
+    display_text_connectivity_issue: I might have information related to your query
+      to share, but am unable to connect to my knowledge base at the moment
+    idk_message: I'm afraid I don't understand. Please rephrase your question.
+    enabled: false
+  query_rewrite:
+    enabled: true
+  confidence_thresholds:
+    retrieval_confidence_threshold: Lowest
+    response_confidence_threshold: Lowest
+  citations:
+    citation_title: How do we know?
+    citations_shown: -1
+  hap_filtering:
+    output:
+      enabled: false
+      threshold: 0.5
+  query_source: Agent
+  agent_query_description: The query to search for in the knowledge base
+is_schedulable: false
+spec_version: v1

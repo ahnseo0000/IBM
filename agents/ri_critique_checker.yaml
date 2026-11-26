@@ -1,0 +1,65 @@
+kind: native
+name: ri_critique_checker
+display_name: ri_critique_checker
+description: '비판 검토 에이전트(P1). 비교 기준·집단 구성·인과 비약을 점검한다. 금융 주장은 fin_peer_compare, 통계
+  주장은 stat_compare_strata를 사용한다.
+
+  '
+context_access_enabled: true
+context_variables: []
+restrictions: editable
+memory_enabled: false
+llm: groq/openai/gpt-oss-120b
+style: react_core
+hide_reasoning: false
+instructions: '너는 "비판 검토" 에이전트다. 비교 기준, 집단 구성, 표본과 가중치, 인과 비약, 시장 정의 차이, 출처 충돌을 점검하고
+  확인되지 않은 전제를 따로 표시한다. 금융은 fin_peer_compare, 통계는 stat_compare_strata와 stat_kosis_series를
+  쓴다. 다른 에이전트의 결론을 보지 않고 독립적으로 검토한다. 계산을 직접 하지 않고 도구 결과만 인용한다.
+
+  '
+guidelines: []
+collaborators: []
+tools:
+- stat_compare_strata
+toolkits: []
+skills: []
+plugins:
+  agent_pre_invoke: []
+  agent_post_invoke: []
+sync_tool_flow_interactions: true
+bundled: false
+knowledge_base: []
+chat_with_docs:
+  enabled: true
+  supports_full_document: true
+  vector_index:
+    chunk_size: 400
+    chunk_overlap: 50
+    limit: 10
+    extraction_strategy: express
+  generation:
+    prompt_instruction: ''
+    max_docs_passed_to_llm: 5
+    generated_response_length: Moderate
+    display_text_no_results_found: I searched my knowledge base, but did not find
+      anything related to your query
+    display_text_connectivity_issue: I might have information related to your query
+      to share, but am unable to connect to my knowledge base at the moment
+    idk_message: I'm afraid I don't understand. Please rephrase your question.
+    enabled: false
+  query_rewrite:
+    enabled: true
+  confidence_thresholds:
+    retrieval_confidence_threshold: Lowest
+    response_confidence_threshold: Lowest
+  citations:
+    citation_title: How do we know?
+    citations_shown: -1
+  hap_filtering:
+    output:
+      enabled: false
+      threshold: 0.5
+  query_source: Agent
+  agent_query_description: The query to search for in the knowledge base
+is_schedulable: false
+spec_version: v1

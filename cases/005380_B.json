@@ -1,0 +1,42 @@
+{
+  "case_id": "B001",
+  "corp_label": "B사",
+  "stock_code": "005380",
+  "corp_code": "00164742",
+  "corp_name": "현대자동차",
+  "fiscal_year": 2025,
+  "metric": "debt_ratio",
+  "reported_value": null,
+  "threshold": 200,
+  "direction": "이하",
+  "hypothesis": null,
+  "note": "현대차 2025 CFS 부채비율=188.95% < 200%. OFS=40.89%.",
+  "cfs": {
+    "total_liabilities":        "241196612000000",
+    "total_equity":             "127648237000000",
+    "operating_income":         "11467851000000",
+    "interest_expense":         "1009986000000",
+    "short_term_borrowings":    "10388351000000",
+    "current_portion_lt_debt":  "33761025000000",
+    "long_term_borrowings":     "24340003000000",
+    "bonds":                    "106900459000000",
+    "lease_liabilities":        "1125080000000",
+    "operating_cash_flow":      "-5991270000000",
+    "interest_is_approximate":  true,
+    "lease_found":              true
+  },
+  "ofs": {
+    "total_liabilities":        "28611827000000",
+    "total_equity":             "69968561000000",
+    "operating_income":         "3515052000000",
+    "interest_expense":         "173967000000",
+    "short_term_borrowings":    "1002527000000",
+    "current_portion_lt_debt":  "466966000000",
+    "long_term_borrowings":     "1255538000000",
+    "bonds":                    "149966000000",
+    "lease_liabilities":        "345265000000",
+    "operating_cash_flow":      "6934517000000",
+    "interest_is_approximate":  true,
+    "lease_found":              true
+  }
+}

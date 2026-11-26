@@ -1,0 +1,35 @@
+﻿# API 키 파일 — 절대 커밋하지 않는다
+key.txt
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+venv/
+
+# 캐시 (prefetch 결과는 별도 관리, stat_pack의 가상 시연 데이터는 포함)
+/cache/
+stat_pack/cache/stat/artifacts/
+
+# 로컬 개발 환경 설정
+.bob/
+.vscode/
+/workspace_config.yaml
+
+# ADK export 산출물 (통계 팩 코드는 stat_pack/ 에 정리)
+agents/ri_coordinator_export/
+agents/*.zip
+
+# 이 프로젝트와 무관하거나 중복인 파일
+agents/email_helper_ASY.py
+agents/dart_api_conn_full.yaml
+
+# 개발 중 사용한 탐색·점검 스크립트
+scripts/*
+!scripts/screen_candidates.py
+!scripts/ecos_refresh.py
+
+# 실제 IBM ID가 들어 있는 로컬 데모
+demo/index.local.html

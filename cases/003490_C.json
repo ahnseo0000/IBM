@@ -1,0 +1,55 @@
+{
+  "case_id": "C001",
+  "corp_label": "C사",
+  "stock_code": "003490",
+  "corp_code": "00113526",
+  "corp_name": "대한항공",
+  "fiscal_year": 2025,
+  "claims": [
+    {
+      "metric": "cfo_to_debt",
+      "reported_value": null,
+      "threshold": 0.35,
+      "direction": "이상",
+      "hypothesis": null,
+      "note": "CFS S0=0.4351(통과), S1(broad)=0.1819(미달) → 뒤집힘. OFS S2=0.4488(통과), S3=0.2194(미달)."
+    },
+    {
+      "metric": "interest_coverage",
+      "reported_value": null,
+      "threshold": 1.5,
+      "direction": "이상",
+      "hypothesis": null,
+      "note": "CFS S0=1.3801 < 1.5 → 뒤집힘(확정). 이자비용=dart_AdjustmentsForInterestExpenses(CF 조정항목). OFS S2=2.9630(통과)."
+    }
+  ],
+  "cfs": {
+    "total_liabilities":        "38946973671652",
+    "total_equity":             "11459098427293",
+    "operating_income":         "1113589428051",
+    "interest_expense":         "806880974699",
+    "short_term_borrowings":    "2027009390000",
+    "current_portion_lt_debt":  "1437525929701",
+    "long_term_borrowings":     "3277465790737",
+    "bonds":                    "2623259302544",
+    "lease_liabilities":        "13037559057911",
+    "operating_cash_flow":      "4075191178550",
+    "interest_is_approximate":  false,
+    "lease_found":              true,
+    "interest_account_note": "dart_AdjustmentsForInterestExpenses (CF 조정항목) — IS 직접 이자비용 계정 없음. 금융비용(ifrs-full_FinanceCosts)=972607669667"
+  },
+  "ofs": {
+    "total_liabilities":        "27268786591778",
+    "total_equity":             "11187861262069",
+    "operating_income":         "1539252001960",
+    "interest_expense":         "519483431003",
+    "short_term_borrowings":    "1027009390000",
+    "current_portion_lt_debt":  "998320284527",
+    "long_term_borrowings":     "3176356499985",
+    "bonds":                    "2632261677121",
+    "lease_liabilities":        "8192786544936",
+    "operating_cash_flow":      "3516085485665",
+    "interest_is_approximate":  false,
+    "lease_found":              true
+  }
+}
