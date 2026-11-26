@@ -268,7 +268,16 @@
   var overlay = document.getElementById('chatOverlay');
   var authWarn = document.getElementById('authWarn');
 
-  setTimeout(function () {
+  // ID가 자리표시면(공개용) 채팅 영역을 숨기고 결과 카드만 보여준다
+  var hasChat = window.wxOConfiguration.orchestrationID.charAt(0) !== '<';
+  if (!hasChat) {
+    document.querySelector('.right').style.display = 'none';
+    var layout = document.querySelector('.layout');
+    layout.style.gridTemplateColumns = '1fr';
+    layout.style.maxWidth = '640px';
+  }
+
+  if (hasChat) setTimeout(function () {
     var script = document.createElement('script');
     script.src = window.wxOConfiguration.hostURL + '/wxochat/wxoLoader.js?embed=true';
     script.addEventListener('load', function () {
